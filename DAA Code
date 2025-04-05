@@ -1,0 +1,50 @@
+import javax.crypto.*;
+import java.util.*;
+
+public class Main {
+
+    private static SecretKey secretKey;
+
+    // Generate encryption key
+    public static void generateKey() throws Exception {
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        keyGen.init(128);
+        secretKey = keyGen.generateKey();
+    }
+
+    // Encrypt input
+    public static String encryptData(String data) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] encrypted = cipher.doFinal(data.getBytes());
+        return Base64.getEncoder().encodeToString(encrypted);
+    }
+
+    // Decrypt input
+    public static String decryptData(String encryptedData) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
+        return new String(decrypted);
+    }
+
+    public static void main(String[] args) {
+        try {
+            Scanner scanner = new Scanner(System.in);
+
+            generateKey(); // Create a new key
+
+            System.out.print("Enter your message to encrypt: ");
+            String userInput = scanner.nextLine();
+
+            String encrypted = encryptData(userInput);
+            System.out.println("Encrypted Message: " + encrypted);
+
+            String decrypted = decryptData(encrypted);
+            System.out.println("Decrypted Message: " + decrypted);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
